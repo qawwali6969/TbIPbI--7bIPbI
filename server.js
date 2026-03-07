@@ -143,6 +143,98 @@ async function fetchBoards(accessToken) {
   return json;
 }
 
+function decodeHtml(value) {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+function extractMetaTag(html, propertyName) {
+  const pattern = new RegExp(
+    `<meta[^>]+(?:property|name)=["']${propertyName}["'][^>]+content=["']([^"']+)["'][^>]*>`,
+    'i'
+  );
+  const match = html.match(pattern);
+  return match ? decodeHtml(match[1].trim()) : '';
+}
+
+function extractTitle(html) {
+  const match = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+  return match ? decodeHtml(match[1].trim()) : '';
+}
+
+async function fetchEtsyPreview(listingUrl) {
+  let parsedUrl;
+
+  try {
+    parsedUrl = new URL(listingUrl);
+  } catch {
+    throw new Error('Invalid listing URL.');
+  }
+
+  if (!/etsy\.com$/i.test(parsedUrl.hostname) && !/\.etsy\.com$/i.test(parsedUrl.hostname)) {
+    throw new Error('Only Etsy listing URLs are supported for this preview.');
+  }
+
+  const response = await fetch(parsedUrl.toString(), {
+    headers: {
+      'User-Agent': 'KinosharaPinterestPublisher/1.0'
+    }
+  });
+
+  const html = await response.text();
+
+  if (!response.ok) {
+    const error = new Error('Could not load the Etsy listing page.');
+    error.statusCode = response.status;
+    throw error;
+  }
+
+  const title = extractMetaTag(html, 'og:title') || extractTitle(html);
+  const description = extractMetaTag(html, 'og:description') || extractMetaTag(html, 'description');
+  const imageUrl = extractMetaTag(html, 'og:image');
+
+  return {
+    listingUrl: parsedUrl.toString(),
+    title,
+    description,
+    imageUrl
+  };
+}
+
+async function createPin(accessToken, payload) {
+  const response = await fetch('https://api.pinterest.com/v5/pins', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const text = await response.text();
+  let json;
+
+  try {
+    json = text ? JSON.parse(text) : {};
+  } catch {
+    json = { raw: text };
+  }
+
+  if (!response.ok) {
+    const message = json.message || json.error || 'Pinterest pin creation failed.';
+    const error = new Error(message);
+    error.statusCode = response.status;
+    error.details = json;
+    throw error;
+  }
+
+  return json;
+}
+
 async function handleApi(req, res, pathname) {
   if (pathname === '/health') {
     sendJson(res, 200, {
@@ -200,6 +292,71 @@ async function handleApi(req, res, pathname) {
 
       const boards = await fetchBoards(accessToken);
       sendJson(res, 200, boards);
+      return true;
+    } catch (error) {
+      sendJson(res, error.statusCode || 500, {
+        error: error.message,
+        details: error.details || null
+      });
+      return true;
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/api/etsy/preview') {
+    try {
+      const body = await collectJsonBody(req);
+      const listingUrl = typeof body.listingUrl === 'string' ? body.listingUrl.trim() : '';
+
+      if (!listingUrl) {
+        sendJson(res, 400, { error: 'Missing Etsy listing URL.' });
+        return true;
+      }
+
+      const preview = await fetchEtsyPreview(listingUrl);
+      sendJson(res, 200, preview);
+      return true;
+    } catch (error) {
+      sendJson(res, error.statusCode || 500, {
+        error: error.message,
+        details: error.details || null
+      });
+      return true;
+    }
+  }
+
+  if (req.method === 'POST' && pathname === '/api/pinterest/publish-pin') {
+    try {
+      const body = await collectJsonBody(req);
+      const accessToken = typeof body.accessToken === 'string' ? body.accessToken.trim() : '';
+      const boardId = typeof body.boardId === 'string' ? body.boardId.trim() : '';
+      const title = typeof body.title === 'string' ? body.title.trim() : '';
+      const description = typeof body.description === 'string' ? body.description.trim() : '';
+      const destinationLink = typeof body.destinationLink === 'string' ? body.destinationLink.trim() : '';
+      const imageUrl = typeof body.imageUrl === 'string' ? body.imageUrl.trim() : '';
+
+      if (!accessToken) {
+        sendJson(res, 400, { error: 'Missing access token.' });
+        return true;
+      }
+
+      if (!boardId || !title || !destinationLink || !imageUrl) {
+        sendJson(res, 400, { error: 'Board, title, destination link, and image URL are required.' });
+        return true;
+      }
+
+      const pinPayload = {
+        board_id: boardId,
+        title,
+        description,
+        link: destinationLink,
+        media_source: {
+          source_type: 'image_url',
+          url: imageUrl
+        }
+      };
+
+      const pin = await createPin(accessToken, pinPayload);
+      sendJson(res, 200, pin);
       return true;
     } catch (error) {
       sendJson(res, error.statusCode || 500, {

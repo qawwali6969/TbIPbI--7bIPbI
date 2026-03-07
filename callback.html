@@ -31,7 +31,7 @@
         }
 
         .card {
-            width: min(720px, 100%);
+            width: min(860px, 100%);
             background: var(--card);
             color: var(--ink);
             border-radius: 28px;
@@ -61,31 +61,36 @@
             margin-top: 8px;
         }
 
-        .code {
+        .code,
+        pre,
+        input,
+        textarea,
+        select {
+            width: 100%;
             margin-top: 14px;
             padding: 14px;
             border-radius: 14px;
+            border: 1px solid rgba(33, 24, 20, 0.14);
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--ink);
+            font: 400 0.95rem/1.5 Arial, Helvetica, sans-serif;
+        }
+
+        .code,
+        pre {
             background: #201714;
             color: #fff7f0;
             font-family: "Courier New", monospace;
             word-break: break-word;
+            overflow-x: auto;
+            white-space: pre-wrap;
         }
+
+        textarea { min-height: 120px; resize: vertical; }
 
         .hidden { display: none; }
         .ok { color: var(--ok); }
         .err { color: var(--error); }
-
-        pre {
-            margin-top: 14px;
-            padding: 14px;
-            border-radius: 14px;
-            background: rgba(32, 23, 20, 0.06);
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
 
         .actions {
             display: flex;
@@ -103,18 +108,12 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            border: 0;
+            cursor: pointer;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #fff7f0;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid rgba(33, 24, 20, 0.14);
-            color: var(--ink);
-        }
+        .btn-primary { background: var(--accent); color: #fff7f0; }
+        .btn-secondary { background: transparent; border: 1px solid rgba(33, 24, 20, 0.14); color: var(--ink); }
 
         .meta {
             margin-top: 18px;
@@ -123,9 +122,26 @@
             line-height: 1.7;
         }
 
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .field-label {
+            display: block;
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 640px) {
             .card { padding: 22px; }
-            .actions { flex-direction: column; }
+            .actions, .form-grid { grid-template-columns: 1fr; display: grid; }
             .btn { width: 100%; }
         }
     </style>
@@ -135,7 +151,7 @@
         <h1>Pinterest Authorization Callback</h1>
         <p class="sub">
             This page receives the redirect from Pinterest after a merchant authorizes the Kinoshara integration.
-            It confirms that the Pinterest account connection step has completed and that the authorization code was returned to the registered callback URL.
+            It confirms that the Pinterest account connection step has completed and enables the next publishing steps.
         </p>
 
         <section id="loading" class="status">
@@ -155,12 +171,48 @@
         </section>
 
         <section id="boards-panel" class="status hidden">
-            <p><strong>API demonstration</strong></p>
-            <p id="boards-status">Fetch a small sample of boards from the authorized Pinterest account.</p>
+            <p><strong>Board selection</strong></p>
+            <p id="boards-status">Fetch boards from the authorized Pinterest account.</p>
             <div class="actions">
                 <button id="fetch-boards" class="btn btn-primary" type="button">Fetch Boards</button>
             </div>
+            <label class="field-label" for="board-select">Select destination board</label>
+            <select id="board-select" class="hidden"></select>
             <pre id="boards-output" class="hidden"></pre>
+        </section>
+
+        <section id="listing-panel" class="status hidden">
+            <p><strong>Etsy Listing to Pin</strong></p>
+            <p id="listing-status">Load an Etsy listing, review the draft fields, and publish a product Pin.</p>
+            <div class="form-grid">
+                <div class="full">
+                    <label class="field-label" for="listing-url">Etsy listing URL</label>
+                    <input id="listing-url" type="url" placeholder="https://www.etsy.com/listing/...">
+                </div>
+                <div class="full actions" style="margin-top:0;">
+                    <button id="load-listing" class="btn btn-primary" type="button">Load from Etsy</button>
+                </div>
+                <div class="full">
+                    <label class="field-label" for="pin-title">Pin title</label>
+                    <input id="pin-title" type="text" placeholder="Product title">
+                </div>
+                <div class="full">
+                    <label class="field-label" for="pin-description">Pin description</label>
+                    <textarea id="pin-description" placeholder="Short product description"></textarea>
+                </div>
+                <div>
+                    <label class="field-label" for="pin-link">Destination link</label>
+                    <input id="pin-link" type="url" placeholder="https://www.etsy.com/listing/...">
+                </div>
+                <div>
+                    <label class="field-label" for="image-url">Image URL</label>
+                    <input id="image-url" type="url" placeholder="https://...jpg">
+                </div>
+                <div class="full actions" style="margin-top:0;">
+                    <button id="publish-pin" class="btn btn-primary" type="button">Publish Pin</button>
+                </div>
+            </div>
+            <pre id="listing-output" class="hidden"></pre>
         </section>
 
         <section id="error" class="status hidden">
@@ -174,7 +226,7 @@
         </div>
 
         <p class="meta">
-            This callback page is used only for Pinterest account authorization and secure backend processing related to Kinoshara's merchant publishing workflow.
+            This callback page is used for Pinterest account authorization, board selection, and publishing original product Pins from approved Kinoshara listings.
         </p>
     </main>
 
@@ -195,21 +247,42 @@
         const boardsPanelEl = document.getElementById('boards-panel');
         const boardsStatusEl = document.getElementById('boards-status');
         const boardsOutputEl = document.getElementById('boards-output');
+        const boardSelectEl = document.getElementById('board-select');
+        const listingPanelEl = document.getElementById('listing-panel');
+        const listingStatusEl = document.getElementById('listing-status');
+        const listingOutputEl = document.getElementById('listing-output');
+        const listingUrlEl = document.getElementById('listing-url');
+        const pinTitleEl = document.getElementById('pin-title');
+        const pinDescriptionEl = document.getElementById('pin-description');
+        const pinLinkEl = document.getElementById('pin-link');
+        const imageUrlEl = document.getElementById('image-url');
         const fetchBoardsButton = document.getElementById('fetch-boards');
+        const loadListingButton = document.getElementById('load-listing');
+        const publishPinButton = document.getElementById('publish-pin');
 
         let currentAccessToken = '';
+        let boardsCache = [];
 
         function showJson(element, payload) {
             element.textContent = JSON.stringify(payload, null, 2);
             element.classList.remove('hidden');
         }
 
+        function setBoardOptions(items) {
+            boardSelectEl.innerHTML = '';
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name || item.id;
+                boardSelectEl.appendChild(option);
+            });
+            boardSelectEl.classList.toggle('hidden', items.length === 0);
+        }
+
         async function postJson(url, payload) {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
@@ -244,8 +317,8 @@
                 if (currentAccessToken) {
                     boardsPanelEl.classList.remove('hidden');
                 }
-            } catch (error) {
-                tokenStatusEl.textContent = `Token exchange failed: ${error.message}`;
+            } catch (err) {
+                tokenStatusEl.textContent = `Token exchange failed: ${err.message}`;
             }
         }
 
@@ -253,13 +326,69 @@
             boardsStatusEl.textContent = 'Fetching boards from Pinterest API...';
 
             try {
-                const boardsPayload = await postJson('/api/pinterest/boards', {
-                    accessToken: currentAccessToken
-                });
-                boardsStatusEl.textContent = 'Boards response received.';
+                const boardsPayload = await postJson('/api/pinterest/boards', { accessToken: currentAccessToken });
+                boardsCache = boardsPayload.items || boardsPayload.data || [];
+                boardsStatusEl.textContent = boardsCache.length
+                    ? 'Boards loaded. Select a destination board below.'
+                    : 'Boards response received, but no boards were returned.';
+                setBoardOptions(boardsCache);
                 showJson(boardsOutputEl, boardsPayload);
-            } catch (error) {
-                boardsStatusEl.textContent = `Boards request failed: ${error.message}`;
+                listingPanelEl.classList.remove('hidden');
+            } catch (err) {
+                boardsStatusEl.textContent = `Boards request failed: ${err.message}`;
+            }
+        }
+
+        async function loadListing() {
+            const listingUrl = listingUrlEl.value.trim();
+            if (!listingUrl) {
+                listingStatusEl.textContent = 'Enter an Etsy listing URL first.';
+                return;
+            }
+
+            listingStatusEl.textContent = 'Loading Etsy listing data...';
+
+            try {
+                const preview = await postJson('/api/etsy/preview', { listingUrl });
+                pinTitleEl.value = preview.title || '';
+                pinDescriptionEl.value = preview.description || '';
+                pinLinkEl.value = preview.listingUrl || listingUrl;
+                imageUrlEl.value = preview.imageUrl || '';
+                listingStatusEl.textContent = 'Listing data loaded. Review the draft and publish when ready.';
+                showJson(listingOutputEl, preview);
+            } catch (err) {
+                listingStatusEl.textContent = `Could not load Etsy listing: ${err.message}`;
+            }
+        }
+
+        async function publishPin() {
+            if (!currentAccessToken) {
+                listingStatusEl.textContent = 'No access token is available yet.';
+                return;
+            }
+
+            if (!boardSelectEl.value) {
+                listingStatusEl.textContent = 'Fetch boards and select a destination board first.';
+                return;
+            }
+
+            const payload = {
+                accessToken: currentAccessToken,
+                boardId: boardSelectEl.value,
+                title: pinTitleEl.value.trim(),
+                description: pinDescriptionEl.value.trim(),
+                destinationLink: pinLinkEl.value.trim(),
+                imageUrl: imageUrlEl.value.trim()
+            };
+
+            listingStatusEl.textContent = 'Publishing Pin to Pinterest...';
+
+            try {
+                const pinPayload = await postJson('/api/pinterest/publish-pin', payload);
+                listingStatusEl.textContent = 'Pin published successfully.';
+                showJson(listingOutputEl, pinPayload);
+            } catch (err) {
+                listingStatusEl.textContent = `Pin publish failed: ${err.message}`;
             }
         }
 
@@ -274,13 +403,9 @@
             errorMsgEl.textContent = errorDescription || error || 'No authorization code was returned in the callback URL.';
         }
 
-        fetchBoardsButton.addEventListener('click', () => {
-            if (!currentAccessToken) {
-                boardsStatusEl.textContent = 'No access token is available yet.';
-                return;
-            }
-            fetchBoards();
-        });
+        fetchBoardsButton.addEventListener('click', fetchBoards);
+        loadListingButton.addEventListener('click', loadListing);
+        publishPinButton.addEventListener('click', publishPin);
     </script>
 </body>
 </html>
