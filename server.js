@@ -9,6 +9,8 @@ const CLIENT_ID = process.env.PINTEREST_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.PINTEREST_CLIENT_SECRET || '';
 const REDIRECT_URI = process.env.PINTEREST_REDIRECT_URI || `http://localhost:${PORT}/callback.html`;
 const DEFAULT_SCOPES = process.env.PINTEREST_SCOPES || 'boards:read,pins:read,pins:write';
+const ETSY_API_KEY = process.env.ETSY_API_KEY || '';
+const ETSY_API_SECRET = process.env.ETSY_API_SECRET || '';
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -143,6 +145,52 @@ async function fetchBoards(accessToken) {
   return json;
 }
 
+function getEtsyApiHeader() {
+  if (!ETSY_API_KEY || !ETSY_API_SECRET) {
+    throw new Error('Missing ETSY_API_KEY or ETSY_API_SECRET.');
+  }
+
+  return `${ETSY_API_KEY}:${ETSY_API_SECRET}`;
+}
+
+function extractEtsyListingId(listingUrl) {
+  try {
+    const parsedUrl = new URL(listingUrl);
+    const match = parsedUrl.pathname.match(/\/listing\/(\d+)/i);
+    return match ? match[1] : '';
+  } catch {
+    return '';
+  }
+}
+
+async function etsyApiGet(pathname) {
+  const response = await fetch(`https://api.etsy.com/v3/application${pathname}`, {
+    headers: {
+      'x-api-key': getEtsyApiHeader(),
+      'User-Agent': 'KinosharaPinterestPublisher/1.0'
+    }
+  });
+
+  const text = await response.text();
+  let json;
+
+  try {
+    json = text ? JSON.parse(text) : {};
+  } catch {
+    json = { raw: text };
+  }
+
+  if (!response.ok) {
+    const message = json.error || json.message || json.detail || 'Etsy API request failed.';
+    const error = new Error(message);
+    error.statusCode = response.status;
+    error.details = json;
+    throw error;
+  }
+
+  return json;
+}
+
 function decodeHtml(value) {
   return value
     .replace(/&amp;/g, '&')
@@ -179,6 +227,34 @@ async function fetchEtsyPreview(listingUrl) {
     throw new Error('Only Etsy listing URLs are supported for this preview.');
   }
 
+  const listingId = extractEtsyListingId(parsedUrl.toString());
+
+  if (listingId && ETSY_API_KEY && ETSY_API_SECRET) {
+    try {
+      const listing = await etsyApiGet(`/listings/${listingId}`);
+      let imageUrl = '';
+
+      try {
+        const images = await etsyApiGet(`/shops/${listing.shop_id}/listings/${listingId}/images`);
+        const firstImage = images.results?.[0] || images.items?.[0] || null;
+        imageUrl = firstImage?.url_570xN || firstImage?.url_fullxfull || firstImage?.url || '';
+      } catch {
+        imageUrl = '';
+      }
+
+      return {
+        source: 'etsy_api',
+        listingId,
+        listingUrl: listing.url || parsedUrl.toString(),
+        title: listing.title || '',
+        description: listing.description || '',
+        imageUrl
+      };
+    } catch (error) {
+      // Fall back to HTML fetch only if Etsy API path is unavailable.
+    }
+  }
+
   const response = await fetch(parsedUrl.toString(), {
     headers: {
       'User-Agent': 'KinosharaPinterestPublisher/1.0'
@@ -198,6 +274,7 @@ async function fetchEtsyPreview(listingUrl) {
   const imageUrl = extractMetaTag(html, 'og:image');
 
   return {
+    source: 'html_fallback',
     listingUrl: parsedUrl.toString(),
     title,
     description,
@@ -242,7 +319,9 @@ async function handleApi(req, res, pathname) {
       redirectUri: REDIRECT_URI,
       scopes: DEFAULT_SCOPES,
       hasClientId: Boolean(CLIENT_ID),
-      hasClientSecret: Boolean(CLIENT_SECRET)
+      hasClientSecret: Boolean(CLIENT_SECRET),
+      hasEtsyApiKey: Boolean(ETSY_API_KEY),
+      hasEtsyApiSecret: Boolean(ETSY_API_SECRET)
     });
     return true;
   }
@@ -254,6 +333,14 @@ async function handleApi(req, res, pathname) {
       scopes: DEFAULT_SCOPES,
       hasClientId: Boolean(CLIENT_ID),
       hasClientSecret: Boolean(CLIENT_SECRET)
+    });
+    return true;
+  }
+
+  if (req.method === 'GET' && pathname === '/api/etsy/status') {
+    sendJson(res, 200, {
+      hasEtsyApiKey: Boolean(ETSY_API_KEY),
+      hasEtsyApiSecret: Boolean(ETSY_API_SECRET)
     });
     return true;
   }
