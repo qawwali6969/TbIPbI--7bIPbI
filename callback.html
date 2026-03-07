@@ -87,6 +87,7 @@
         }
 
         textarea { min-height: 120px; resize: vertical; }
+        select { display: block; }
 
         .hidden { display: none; }
         .ok { color: var(--ok); }
@@ -139,6 +140,29 @@
             font-size: 0.9rem;
         }
 
+        .board-list {
+            margin-top: 12px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .board-chip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(33, 24, 20, 0.1);
+            color: var(--ink);
+            font-size: 0.92rem;
+        }
+
+        .board-chip strong {
+            font-size: 0.95rem;
+        }
+
         @media (max-width: 640px) {
             .card { padding: 22px; }
             .actions, .form-grid { grid-template-columns: 1fr; display: grid; }
@@ -178,6 +202,7 @@
             </div>
             <label class="field-label" for="board-select">Select destination board</label>
             <select id="board-select" class="hidden"></select>
+            <div id="board-list" class="board-list hidden"></div>
             <pre id="boards-output" class="hidden"></pre>
         </section>
 
@@ -248,6 +273,7 @@
         const boardsStatusEl = document.getElementById('boards-status');
         const boardsOutputEl = document.getElementById('boards-output');
         const boardSelectEl = document.getElementById('board-select');
+        const boardListEl = document.getElementById('board-list');
         const listingPanelEl = document.getElementById('listing-panel');
         const listingStatusEl = document.getElementById('listing-status');
         const listingOutputEl = document.getElementById('listing-output');
@@ -270,13 +296,23 @@
 
         function setBoardOptions(items) {
             boardSelectEl.innerHTML = '';
+            boardListEl.innerHTML = '';
+
             items.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.id;
                 option.textContent = item.name || item.id;
                 boardSelectEl.appendChild(option);
+
+                const card = document.createElement('div');
+                card.className = 'board-chip';
+                card.innerHTML = `<strong>${item.name || item.id}</strong><span>${item.id}</span>`;
+                boardListEl.appendChild(card);
             });
-            boardSelectEl.classList.toggle('hidden', items.length === 0);
+
+            const hasItems = items.length > 0;
+            boardSelectEl.classList.toggle('hidden', !hasItems);
+            boardListEl.classList.toggle('hidden', !hasItems);
         }
 
         async function postJson(url, payload) {
