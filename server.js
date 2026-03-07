@@ -251,7 +251,13 @@ async function fetchEtsyPreview(listingUrl) {
         imageUrl
       };
     } catch (error) {
-      // Fall back to HTML fetch only if Etsy API path is unavailable.
+      if (error.statusCode === 401 || error.statusCode === 403) {
+        throw new Error(`Etsy API access is not active yet: ${error.message}`);
+      }
+
+      if (error.statusCode && error.statusCode >= 400 && error.statusCode < 500) {
+        throw new Error(`Etsy API could not load this listing: ${error.message}`);
+      }
     }
   }
 
