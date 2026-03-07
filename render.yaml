@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: kinoshara-pinterest-app
+    runtime: node
+    plan: free
+    buildCommand: "true"
+    startCommand: npm start
+    envVars:
+      - key: PINTEREST_CLIENT_ID
+        sync: false
+      - key: PINTEREST_CLIENT_SECRET
+        sync: false
+      - key: PINTEREST_REDIRECT_URI
+        sync: false
+      - key: PINTEREST_SCOPES
+        value: boards:read,pins:read,pins:write

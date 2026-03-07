@@ -57,6 +57,10 @@
             margin-bottom: 18px;
         }
 
+        .status p + p {
+            margin-top: 8px;
+        }
+
         .code {
             margin-top: 14px;
             padding: 14px;
@@ -70,6 +74,18 @@
         .hidden { display: none; }
         .ok { color: var(--ok); }
         .err { color: var(--error); }
+
+        pre {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 14px;
+            background: rgba(32, 23, 20, 0.06);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
 
         .actions {
             display: flex;
@@ -132,6 +148,21 @@
             <div id="code" class="code"></div>
         </section>
 
+        <section id="token-panel" class="status hidden">
+            <p><strong>Token exchange</strong></p>
+            <p id="token-status">Waiting to exchange the authorization code for an access token...</p>
+            <pre id="token-output" class="hidden"></pre>
+        </section>
+
+        <section id="boards-panel" class="status hidden">
+            <p><strong>API demonstration</strong></p>
+            <p id="boards-status">Fetch a small sample of boards from the authorized Pinterest account.</p>
+            <div class="actions">
+                <button id="fetch-boards" class="btn btn-primary" type="button">Fetch Boards</button>
+            </div>
+            <pre id="boards-output" class="hidden"></pre>
+        </section>
+
         <section id="error" class="status hidden">
             <p class="err"><strong>Authorization failed.</strong></p>
             <p id="error-message"></p>
@@ -158,16 +189,98 @@
         const errorEl = document.getElementById('error');
         const codeEl = document.getElementById('code');
         const errorMsgEl = document.getElementById('error-message');
+        const tokenPanelEl = document.getElementById('token-panel');
+        const tokenStatusEl = document.getElementById('token-status');
+        const tokenOutputEl = document.getElementById('token-output');
+        const boardsPanelEl = document.getElementById('boards-panel');
+        const boardsStatusEl = document.getElementById('boards-status');
+        const boardsOutputEl = document.getElementById('boards-output');
+        const fetchBoardsButton = document.getElementById('fetch-boards');
+
+        let currentAccessToken = '';
+
+        function showJson(element, payload) {
+            element.textContent = JSON.stringify(payload, null, 2);
+            element.classList.remove('hidden');
+        }
+
+        async function postJson(url, payload) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const text = await response.text();
+            let json;
+
+            try {
+                json = text ? JSON.parse(text) : {};
+            } catch {
+                json = { raw: text };
+            }
+
+            if (!response.ok) {
+                throw new Error(json.error || 'Request failed.');
+            }
+
+            return json;
+        }
+
+        async function exchangeToken(authCode) {
+            tokenPanelEl.classList.remove('hidden');
+            tokenStatusEl.textContent = 'Calling /api/pinterest/token on the backend...';
+
+            try {
+                const tokenPayload = await postJson('/api/pinterest/token', { code: authCode });
+                currentAccessToken = tokenPayload.access_token || '';
+                tokenStatusEl.textContent = currentAccessToken
+                    ? 'Access token received from backend.'
+                    : 'Token response received.';
+                showJson(tokenOutputEl, tokenPayload);
+
+                if (currentAccessToken) {
+                    boardsPanelEl.classList.remove('hidden');
+                }
+            } catch (error) {
+                tokenStatusEl.textContent = `Token exchange failed: ${error.message}`;
+            }
+        }
+
+        async function fetchBoards() {
+            boardsStatusEl.textContent = 'Fetching boards from Pinterest API...';
+
+            try {
+                const boardsPayload = await postJson('/api/pinterest/boards', {
+                    accessToken: currentAccessToken
+                });
+                boardsStatusEl.textContent = 'Boards response received.';
+                showJson(boardsOutputEl, boardsPayload);
+            } catch (error) {
+                boardsStatusEl.textContent = `Boards request failed: ${error.message}`;
+            }
+        }
 
         loadingEl.classList.add('hidden');
 
         if (code) {
             successEl.classList.remove('hidden');
             codeEl.textContent = `Authorization code: ${code}`;
+            exchangeToken(code);
         } else {
             errorEl.classList.remove('hidden');
             errorMsgEl.textContent = errorDescription || error || 'No authorization code was returned in the callback URL.';
         }
+
+        fetchBoardsButton.addEventListener('click', () => {
+            if (!currentAccessToken) {
+                boardsStatusEl.textContent = 'No access token is available yet.';
+                return;
+            }
+            fetchBoards();
+        });
     </script>
 </body>
 </html>

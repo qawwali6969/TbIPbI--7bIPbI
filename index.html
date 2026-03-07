@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinoshara | Curated Product Listings and Visual Merchandising</title>
-    <meta name="description" content="Kinoshara curates product listings and original visual merchandising assets for marketplace and Pinterest publishing workflows.">
+    <title>Kinoshara Pinterest Publisher</title>
+    <meta name="description" content="Kinoshara Pinterest Publisher is a lightweight merchant tool for authorized board selection and original product Pin publishing.">
     <style>
         :root {
             --bg: #f6f1e8;
-            --panel: rgba(255, 251, 245, 0.82);
+            --panel: rgba(255, 251, 245, 0.84);
             --ink: #201914;
             --muted: #62564c;
             --accent: #bb4a34;
@@ -59,13 +59,11 @@
             color: var(--muted);
         }
 
-        .nav-links a {
-            text-decoration: none;
-        }
+        .nav-links a { text-decoration: none; }
 
         .hero {
             display: grid;
-            grid-template-columns: 1.08fr 0.92fr;
+            grid-template-columns: 1.05fr 0.95fr;
             gap: 22px;
             align-items: stretch;
         }
@@ -78,9 +76,7 @@
             backdrop-filter: blur(18px);
         }
 
-        .hero-copy {
-            padding: 46px;
-        }
+        .hero-copy { padding: 46px; }
 
         .eyebrow {
             display: inline-flex;
@@ -97,14 +93,14 @@
         }
 
         h1 {
-            font-size: clamp(2.8rem, 6vw, 5.5rem);
+            font-size: clamp(2.8rem, 6vw, 5.2rem);
             line-height: 0.94;
-            max-width: 9ch;
+            max-width: 10ch;
             margin-bottom: 18px;
         }
 
         .lead {
-            max-width: 58ch;
+            max-width: 60ch;
             color: var(--muted);
             font: 400 1.06rem/1.75 Arial, Helvetica, sans-serif;
         }
@@ -125,21 +121,10 @@
             justify-content: center;
             text-decoration: none;
             font: 700 0.95rem/1 Arial, Helvetica, sans-serif;
-            transition: transform 0.2s ease, background 0.2s ease;
         }
 
-        .btn:hover { transform: translateY(-1px); }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff8f2;
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.54);
-            border: 1px solid var(--line);
-            color: var(--ink);
-        }
+        .btn-primary { background: var(--accent); color: #fff8f2; }
+        .btn-secondary { background: rgba(255,255,255,0.54); border: 1px solid var(--line); color: var(--ink); }
 
         .hero-side {
             padding: 24px;
@@ -150,43 +135,62 @@
             gap: 14px;
         }
 
-        .story-card,
-        .quote-card,
-        .detail-card {
+        .card {
             border-radius: 24px;
             padding: 22px;
-            background: rgba(255,255,255,0.64);
+            background: rgba(255,255,255,0.66);
             border: 1px solid rgba(255,255,255,0.72);
         }
 
-        .story-card h2,
-        .detail-card h2 {
+        .demo-card {
+            margin-top: 22px;
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255,255,255,0.62);
+            border: 1px solid rgba(255,255,255,0.72);
+        }
+
+        .demo-card p {
+            color: var(--muted);
+            font: 400 0.93rem/1.65 Arial, Helvetica, sans-serif;
+        }
+
+        .demo-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: #8b3324;
+            font: 700 0.8rem/1 Arial, Helvetica, sans-serif;
+            margin-top: 12px;
+        }
+
+        .demo-card pre {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(32, 25, 20, 0.06);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--ink);
+            font: 400 0.84rem/1.55 "Courier New", monospace;
+        }
+
+        .card h2, .info-card h3 {
             font-size: 1rem;
             margin-bottom: 10px;
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        .story-card p,
-        .detail-card p,
-        .detail-card li,
-        .quote-card p {
+        .card p, .card li, .info-card p {
             color: var(--muted);
             font: 400 0.96rem/1.65 Arial, Helvetica, sans-serif;
         }
 
-        .detail-card ul {
-            margin-left: 18px;
-        }
-
-        .quote-card {
-            background: rgba(187, 74, 52, 0.08);
-        }
-
-        .quote-card strong {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
+        .card ul { margin-left: 18px; }
 
         .grid {
             display: grid;
@@ -201,17 +205,6 @@
             background: rgba(255,255,255,0.72);
             border: 1px solid rgba(255,255,255,0.7);
             box-shadow: 0 12px 36px rgba(62, 38, 21, 0.08);
-        }
-
-        .info-card h3 {
-            margin-bottom: 10px;
-            font-size: 1.08rem;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .info-card p {
-            color: var(--muted);
-            font: 400 0.95rem/1.7 Arial, Helvetica, sans-serif;
         }
 
         .footer {
@@ -254,58 +247,62 @@
         <main>
             <section class="hero">
                 <article class="panel hero-copy">
-                    <div class="eyebrow">Curated Listings and Product Publishing</div>
-                    <h1>Original product visuals for marketplace and Pinterest workflows.</h1>
+                    <div class="eyebrow">Pinterest Merchant Tool</div>
+                    <h1>Kinoshara Pinterest Publisher</h1>
                     <p class="lead">
-                        Kinoshara manages curated product listings, branded creative assets, and merchant publishing workflows.
-                        The brand uses original product photography and approved listing data to prepare marketplace content and
-                        Pinterest-ready product Pins that match the store's visual style.
+                        Kinoshara Pinterest Publisher is a lightweight merchant workflow for connecting an authorized Pinterest account,
+                        reviewing destination boards, and publishing original product Pins from approved Kinoshara listings and brand assets.
                     </p>
                     <div class="cta-row">
-                        <a class="btn btn-primary" href="https://www.etsy.com/shop/popshopkr/?etsrc=sdt" target="_blank" rel="noopener noreferrer">View Shop</a>
-                        <a class="btn btn-secondary" href="/privacy.html">Privacy Policy</a>
+                        <a id="connect-pinterest" class="btn btn-primary" href="/callback.html">Connect Pinterest</a>
+                        <a class="btn btn-primary" href="/privacy.html">Privacy Policy</a>
                         <a class="btn btn-secondary" href="/terms.html">Terms & Returns</a>
                     </div>
+                    <section class="demo-card">
+                        <p id="demo-status">Loading OAuth configuration...</p>
+                        <div id="demo-pill" class="demo-pill">Waiting for backend</div>
+                        <pre id="demo-url">OAuth URL will be shown here after the backend configuration loads.</pre>
+                    </section>
                 </article>
 
                 <aside class="panel hero-side">
-                    <section class="story-card">
-                        <h2>Studio Notes</h2>
-                        <p>
-                            Kinoshara focuses on product presentation, catalog consistency, and original merchandising assets
-                            for marketplace listings and social publishing channels.
-                        </p>
-                    </section>
-                    <section class="quote-card">
-                        <strong>Original listing content, adapted for merchant publishing.</strong>
-                        <p>
-                            The publishing workflow is designed to keep product imagery, titles, and descriptions aligned
-                            across listing pages and Pinterest product promotion.
-                        </p>
-                    </section>
-                    <section class="detail-card">
-                        <h2>Operational Focus</h2>
+                    <section class="card">
+                        <h2>Core Workflow</h2>
                         <ul>
-                            <li>Email support for order questions and returns.</li>
-                            <li>Public privacy and terms pages linked from the homepage.</li>
-                            <li>Secure handling of Pinterest account authorization for merchant publishing workflows.</li>
+                            <li>Merchant authorizes a Pinterest account through OAuth.</li>
+                            <li>The tool reads selected board data for destination choice.</li>
+                            <li>The tool publishes original product Pins from approved listings.</li>
                         </ul>
+                    </section>
+                    <section class="card">
+                        <h2>Content Policy</h2>
+                        <p>
+                            Kinoshara Pinterest Publisher is intended for original merchant content only. It is not designed for
+                            scraping, competitor monitoring, or republishing third-party Pins.
+                        </p>
+                    </section>
+                    <section class="card">
+                        <h2>Support</h2>
+                        <p>
+                            For privacy, returns, or account connection questions, contact
+                            <a href="mailto:support@kinoshara.app">support@kinoshara.app</a>.
+                        </p>
                     </section>
                 </aside>
             </section>
 
-            <section class="grid" aria-label="Brand details">
+            <section class="grid" aria-label="Project details">
                 <article class="info-card">
-                    <h3>Brand Presence</h3>
-                    <p>Kinoshara uses this site as its public web presence with policy pages, support contact details, and brand information for customers and platform reviewers.</p>
+                    <h3>Authorized Use</h3>
+                    <p>The integration is used only with an authorized Pinterest account connected by the merchant.</p>
                 </article>
                 <article class="info-card">
-                    <h3>Publishing Workflow</h3>
-                    <p>Kinoshara prepares original product creatives from approved listing data and may publish related product Pins to authorized Pinterest accounts.</p>
+                    <h3>Original Assets</h3>
+                    <p>Published Pins are based on approved Kinoshara listings, original product imagery, and brand-owned creative assets.</p>
                 </article>
                 <article class="info-card">
-                    <h3>Contact</h3>
-                    <p>For support, privacy, or business questions, contact <a href="mailto:support@kinoshara.app">support@kinoshara.app</a>.</p>
+                    <h3>Public Pages</h3>
+                    <p>This site provides the public-facing privacy, terms, contact, and callback pages required for Pinterest app review.</p>
                 </article>
             </section>
         </main>
@@ -315,5 +312,45 @@
             <span>Privacy: <a href="mailto:privacy@kinoshara.app">privacy@kinoshara.app</a></span>
         </footer>
     </div>
+    <script>
+        const connectPinterest = document.getElementById('connect-pinterest');
+        const demoStatus = document.getElementById('demo-status');
+        const demoPill = document.getElementById('demo-pill');
+        const demoUrl = document.getElementById('demo-url');
+
+        function buildOauthUrl(config) {
+            const authUrl = new URL('https://www.pinterest.com/oauth/');
+            authUrl.searchParams.set('client_id', config.clientId);
+            authUrl.searchParams.set('redirect_uri', config.redirectUri);
+            authUrl.searchParams.set('response_type', 'code');
+            authUrl.searchParams.set('scope', config.scopes);
+            authUrl.searchParams.set('state', crypto.randomUUID());
+            return authUrl.toString();
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/pinterest/config');
+                const config = await response.json();
+
+                if (!config.hasClientId) {
+                    demoStatus.textContent = 'Set PINTEREST_CLIENT_ID on the backend to generate a real Pinterest authorization link.';
+                    demoPill.textContent = 'Missing Pinterest config';
+                    return;
+                }
+
+                const oauthUrl = buildOauthUrl(config);
+                connectPinterest.href = oauthUrl;
+                demoStatus.textContent = 'OAuth link is ready. Use this button in the demo video to start the Pinterest login flow.';
+                demoPill.textContent = `Scopes: ${config.scopes}`;
+                demoUrl.textContent = oauthUrl;
+            } catch (error) {
+                demoStatus.textContent = `Could not load backend config: ${error.message}`;
+                demoPill.textContent = 'Backend unavailable';
+            }
+        }
+
+        loadConfig();
+    </script>
 </body>
 </html>
