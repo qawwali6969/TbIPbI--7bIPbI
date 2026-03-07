@@ -3,192 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - PopShop KR</title>
-    <meta name="description" content="Privacy Policy for PopShop KR Pinterest Application">
+    <title>Privacy Policy | Kinoshara</title>
+    <meta name="description" content="Privacy Policy for Kinoshara website operations, product listing support, and Pinterest product publishing workflows.">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #f7f3ec;
+            --card: #fffdf9;
+            --ink: #201b18;
+            --muted: #625750;
+            --accent: #b53d2b;
+            --line: rgba(32, 27, 24, 0.12);
+            --soft: #efe3d1;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top right, rgba(181, 61, 43, 0.12), transparent 24%),
+                linear-gradient(180deg, #fcfaf6 0%, var(--bg) 100%);
+            line-height: 1.7;
         }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-        .header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        .header .back-link {
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .header .back-link:hover {
-            text-decoration: underline;
-        }
-        .container {
-            max-width: 800px;
+
+        a { color: var(--accent); }
+
+        .wrap {
+            width: min(920px, calc(100% - 24px));
             margin: 0 auto;
-            padding: 2rem;
-            background: white;
-            min-height: calc(100vh - 200px);
+            padding: 28px 0 56px;
         }
-        .section {
-            margin-bottom: 2rem;
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
         }
-        .section h2 {
-            color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-        }
-        .section p {
-            margin-bottom: 1rem;
-            color: #555;
-        }
-        .section ul {
-            margin-left: 2rem;
-            margin-bottom: 1rem;
-        }
-        .section li {
-            margin-bottom: 0.5rem;
-            color: #555;
-        }
-        .footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 1.5rem;
-            font-size: 0.9rem;
-        }
-        .footer a {
-            color: #ffd700;
+
+        .topbar a {
             text-decoration: none;
         }
-        @media (max-width: 600px) {
-            .container {
-                padding: 1rem;
-            }
-            .header h1 {
-                font-size: 1.5rem;
-            }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(181, 61, 43, 0.96), rgba(107, 45, 24, 0.94));
+            color: #fff9f2;
+            border-radius: 30px;
+            padding: 34px;
+            box-shadow: 0 24px 60px rgba(79, 34, 23, 0.2);
+            margin-bottom: 22px;
+        }
+
+        .hero p {
+            max-width: 64ch;
+            color: rgba(255, 249, 242, 0.88);
+            margin-top: 14px;
+        }
+
+        h1 {
+            font: 400 clamp(2.2rem, 5vw, 3.6rem)/1.05 Georgia, "Times New Roman", serif;
+        }
+
+        .meta {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            font-size: 0.92rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 18px 44px rgba(55, 41, 26, 0.08);
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font: 400 1.55rem/1.2 Georgia, "Times New Roman", serif;
+            margin-bottom: 12px;
+        }
+
+        p + p, ul, ol { margin-top: 12px; }
+
+        ul, ol { margin-left: 20px; }
+
+        li + li { margin-top: 8px; }
+
+        .note {
+            background: var(--soft);
+            border-left: 4px solid var(--accent);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-top: 16px;
+        }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            margin-top: 24px;
+            padding-top: 20px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 640px) {
+            .hero, .card { padding: 22px; border-radius: 24px; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🔒 Privacy Policy</h1>
-        <a href="/" class="back-link">← Back to Home</a>
-    </div>
-    
-    <div class="container">
-        <div class="section">
-            <h2>Introduction</h2>
-            <p>Welcome to PopShop KR ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use our Pinterest application and services.</p>
-            <p>Last updated: March 4, 2025</p>
+    <div class="wrap">
+        <div class="topbar">
+            <a href="/">Back to Home</a>
+            <div>
+                <a href="/terms.html">Terms & Returns</a>
+                <span> | </span>
+                <a href="/callback.html">OAuth Callback</a>
+            </div>
         </div>
-        
-        <div class="section">
-            <h2>Information We Collect</h2>
-            <p>When you use our Pinterest application, we may collect:</p>
+
+        <section class="hero">
+            <h1>Privacy Policy</h1>
+            <p>
+                This Privacy Policy explains how Kinoshara collects, uses, and protects information when a visitor uses
+                the Kinoshara website, contacts the brand, places orders through linked sales channels, or authorizes the
+                Kinoshara Pinterest integration.
+            </p>
+            <div class="meta">Last updated: March 7, 2026</div>
+        </section>
+
+        <section class="card">
+            <h2>1. Who We Are</h2>
+            <p>Kinoshara is a small brand and online seller offering curated products through its website presence and linked marketplace listings.</p>
+            <p>This website serves as Kinoshara's public information hub and also supports the Pinterest integration used for authorized account connections, board selection, and original product Pin publishing workflows.</p>
+            <p>Contact for privacy requests: <a href="mailto:privacy@kinoshara.app">privacy@kinoshara.app</a>.</p>
+        </section>
+
+        <section class="card">
+            <h2>2. Information We Receive</h2>
+            <p>Depending on how a visitor interacts with Kinoshara, we may receive:</p>
             <ul>
-                <li><strong>Pinterest Account Information:</strong> When you authorize our app, we receive your Pinterest profile information, including your username, profile picture, and boards.</li>
-                <li><strong>Usage Data:</strong> Information about how you interact with our application, including pins created and boards accessed.</li>
-                <li><strong>Contact Information:</strong> Email address if you contact us for support.</li>
+                <li>Contact details and message contents when someone reaches out to us for support, order questions, or privacy requests.</li>
+                <li>Basic order-related information that may be shared through the marketplace or sales platform where a customer places an order.</li>
+                <li>Pinterest account identifiers and profile information necessary to recognize the authorized user.</li>
+                <li>Board and Pin data required to read selected boards, review authorized content destinations, or create original product Pins on the user's behalf.</li>
+                <li>Technical data from this website, such as browser type, referral URL, IP address, and timestamped access logs.</li>
             </ul>
-        </div>
-        
-        <div class="section">
-            <h2>How We Use Your Information</h2>
-            <p>We use the collected information to:</p>
+        </section>
+
+        <section class="card">
+            <h2>3. How We Use Information</h2>
+            <p>We use information only for the purposes necessary to operate the Kinoshara website, support customers, and run the Pinterest integration when a user chooses to authorize it.</p>
             <ul>
-                <li>Create and manage Pinterest pins on your behalf</li>
-                <li>Organize your boards and content</li>
-                <li>Provide customer support</li>
-                <li>Improve our services and user experience</li>
-                <li>Comply with legal obligations</li>
+                <li>To respond to customer questions about listings, orders, returns, or support requests.</li>
+                <li>To complete Pinterest OAuth authorization and verify that a user granted access.</li>
+                <li>To call Pinterest API endpoints requested by the user, such as reading selected board data or publishing original product Pins from approved Kinoshara listings.</li>
+                <li>To troubleshoot errors, prevent abuse, and maintain service integrity.</li>
+                <li>To respond to support inquiries, legal requests, and data deletion requests.</li>
             </ul>
-        </div>
-        
-        <div class="section">
-            <h2>Pinterest API Integration</h2>
-            <p>Our application uses the Pinterest API to:</p>
+            <div class="note">
+                We do not ask for or store a user's Pinterest password. Authentication is handled by Pinterest on Pinterest-owned pages.
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>4. Pinterest API Permissions</h2>
+            <p>The Kinoshara app may request a subset of the following Pinterest scopes, depending on the merchant workflow being used:</p>
             <ul>
-                <li>Read your boards and pins (boards:read, pins:read)</li>
-                <li>Create new pins on your behalf (pins:write)</li>
-                <li>Manage board content (boards:write)</li>
+                <li><strong>`boards:read`</strong> to view board metadata needed for destination selection.</li>
+                <li><strong>`boards:write`</strong> to create or update boards when a user explicitly requests it.</li>
+                <li><strong>`pins:read`</strong> to retrieve Pin data associated with the authorized account when needed for workflow review.</li>
+                <li><strong>`pins:write`</strong> to publish original product Pins on behalf of the authorized user.</li>
             </ul>
-            <p>We only access the information necessary to provide our services. You can revoke access at any time through your Pinterest account settings.</p>
-        </div>
-        
-        <div class="section">
-            <h2>Data Storage and Security</h2>
-            <p>We implement appropriate technical and organizational measures to protect your personal data:</p>
+            <p>We request only the permissions necessary for the intended Pinterest feature.</p>
+        </section>
+
+        <section class="card">
+            <h2>5. OAuth and Token Handling</h2>
+            <ol>
+                <li>The user is sent to Pinterest to log in and approve access.</li>
+                <li>Pinterest redirects the user to the registered Kinoshara callback URL with an authorization code.</li>
+                <li>That code is exchanged for an access token by Kinoshara infrastructure using Pinterest's OAuth token endpoint.</li>
+                <li>The token is used only for the authorized Pinterest actions and may be revoked by the user through Pinterest settings.</li>
+            </ol>
+            <div class="note">
+                If a public demo page displays the returned authorization code for review purposes, that display alone does not mean the code is stored permanently on the static site.
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>6. Sharing of Information</h2>
+            <p>We do not sell personal information. Information may be shared only in the following limited situations:</p>
             <ul>
-                <li>All data is transmitted over encrypted connections (HTTPS/TLS)</li>
-                <li>We do not store your Pinterest password</li>
-                <li>Access tokens are securely stored and encrypted</li>
-                <li>We regularly review our security practices</li>
+                <li>With Pinterest, as necessary to complete the OAuth flow and API requests initiated by the user.</li>
+                <li>With hosting, security, or logging providers that help operate the website and only under appropriate confidentiality obligations.</li>
+                <li>When required by law, court order, or to protect rights, safety, or the integrity of the service.</li>
             </ul>
-        </div>
-        
-        <div class="section">
-            <h2>Third-Party Services</h2>
-            <p>We use the following third-party services:</p>
+        </section>
+
+        <section class="card">
+            <h2>7. Data Retention</h2>
+            <p>We retain personal information only for as long as necessary to provide customer support, maintain the website, operate the Pinterest integration, document consent, resolve disputes, comply with law, or prevent abuse.</p>
+            <p>Users may request deletion of stored data by contacting <a href="mailto:privacy@kinoshara.app">privacy@kinoshara.app</a>.</p>
+        </section>
+
+        <section class="card">
+            <h2>8. User Choices</h2>
             <ul>
-                <li><strong>Pinterest:</strong> For pin creation and board management</li>
-                <li><strong>Etsy:</strong> For product listings and sales</li>
+                <li>You may decline to authorize the Pinterest app.</li>
+                <li>You may revoke Kinoshara's access at any time from your Pinterest account settings.</li>
+                <li>You may request access, correction, or deletion of data we hold about you, subject to applicable law.</li>
             </ul>
-            <p>Each third-party service has its own privacy policy. We encourage you to review them.</p>
-        </div>
-        
-        <div class="section">
-            <h2>Your Rights</h2>
-            <p>You have the right to:</p>
-            <ul>
-                <li>Access your personal data</li>
-                <li>Request correction or deletion of your data</li>
-                <li>Revoke Pinterest app authorization</li>
-                <li>Opt out of data collection</li>
-            </ul>
-            <p>To exercise these rights, contact us at: privacy@popshopkr.com</p>
-        </div>
-        
-        <div class="section">
-            <h2>Data Retention</h2>
-            <p>We retain your data only as long as necessary to provide our services or as required by law. When you revoke app access or delete your account, we remove your data within 30 days.</p>
-        </div>
-        
-        <div class="section">
-            <h2>Children's Privacy</h2>
-            <p>Our services are not intended for children under 13. We do not knowingly collect data from children under 13. If you believe we have collected data from a child, please contact us immediately.</p>
-        </div>
-        
-        <div class="section">
-            <h2>Changes to This Policy</h2>
-            <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.</p>
-        </div>
-        
-        <div class="section">
-            <h2>Contact Us</h2>
-            <p>If you have questions about this Privacy Policy, please contact us:</p>
-            <ul>
-                <li>Email: privacy@popshopkr.com</li>
-                <li>Etsy Shop: <a href="https://popshopkr.etsy.com" style="color: #667eea;">popshopkr.etsy.com</a></li>
-            </ul>
-        </div>
-    </div>
-    
-    <div class="footer">
-        <p>© 2025 PopShop KR | <a href="/">Home</a> | <a href="https://popshopkr.etsy.com">Etsy Store</a></p>
+        </section>
+
+        <section class="card">
+            <h2>9. Security</h2>
+            <p>We use reasonable administrative, technical, and organizational safeguards appropriate to the nature of the information processed. No online service can guarantee absolute security, but we limit access and use HTTPS for public web access.</p>
+        </section>
+
+        <section class="card">
+            <h2>10. Children's Privacy</h2>
+            <p>The Kinoshara Pinterest integration is not directed to children, and we do not knowingly collect personal information from children.</p>
+        </section>
+
+        <section class="card">
+            <h2>11. Changes to This Policy</h2>
+            <p>We may update this Privacy Policy from time to time. The current version will always be posted on this page with the effective date shown above.</p>
+        </section>
+
+        <footer class="footer">
+            <p>Kinoshara</p>
+            <p>Privacy contact: <a href="mailto:privacy@kinoshara.app">privacy@kinoshara.app</a></p>
+        </footer>
     </div>
 </body>
 </html>

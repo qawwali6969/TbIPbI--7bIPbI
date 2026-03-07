@@ -3,133 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OAuth Callback - PopShop KR</title>
+    <title>Kinoshara | Pinterest Authorization Callback</title>
+    <meta name="description" content="Kinoshara Pinterest authorization callback page.">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #211814;
+            --card: rgba(255, 247, 240, 0.94);
+            --ink: #211814;
+            --muted: #6b5a4f;
+            --accent: #c6452f;
+            --ok: #1d8d61;
+            --error: #b72f37;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background:
+                radial-gradient(circle at top, rgba(198, 69, 47, 0.24), transparent 24%),
+                linear-gradient(160deg, #1c1411 0%, var(--bg) 100%);
+            font-family: Arial, Helvetica, sans-serif;
+            color: #fff7f0;
+        }
+
+        .card {
+            width: min(720px, 100%);
+            background: var(--card);
+            color: var(--ink);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+        }
+
+        h1 {
+            font: 400 clamp(2rem, 4vw, 3rem)/1.05 Georgia, "Times New Roman", serif;
+            margin-bottom: 10px;
+        }
+
+        .sub {
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .status {
+            border-radius: 20px;
+            padding: 18px;
+            background: rgba(198, 69, 47, 0.08);
+            margin-bottom: 18px;
+        }
+
+        .code {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 14px;
+            background: #201714;
+            color: #fff7f0;
+            font-family: "Courier New", monospace;
+            word-break: break-word;
+        }
+
+        .hidden { display: none; }
+        .ok { color: var(--ok); }
+        .err { color: var(--error); }
+
+        .actions {
             display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .btn {
+            text-decoration: none;
+            min-height: 46px;
+            padding: 0 18px;
+            border-radius: 999px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            font-weight: 700;
         }
-        .container {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 3rem;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff7f0;
         }
-        .logo {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(33, 24, 20, 0.14);
+            color: var(--ink);
         }
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+
+        .meta {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
         }
-        .status {
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
+
+        @media (max-width: 640px) {
+            .card { padding: 22px; }
+            .actions { flex-direction: column; }
+            .btn { width: 100%; }
         }
-        .code-box {
-            background: #1a1a2e;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: 'Courier New', monospace;
-            word-break: break-all;
-            font-size: 0.85rem;
-        }
-        .btn {
-            background: #ffd700;
-            color: #333;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 1rem;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn:hover {
-            background: #ffed4a;
-        }
-        .hidden {
-            display: none;
-        }
-        .success { color: #00ff88; }
-        .error { color: #ff6b6b; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">🔐</div>
-        <h1>Pinterest Authorization</h1>
-        
-        <div id="loading" class="status">
-            <p>Processing authorization...</p>
-        </div>
-        
-        <div id="success" class="status hidden">
-            <p class="success">✅ Authorization successful!</p>
-            <p>Authorization code:</p>
-            <div id="code" class="code-box"></div>
-            <p style="font-size: 0.9rem; margin-top: 1rem;">
-                This code will be exchanged for an access token.
-            </p>
-        </div>
-        
-        <div id="error" class="status hidden">
-            <p class="error">❌ Authorization failed</p>
+    <main class="card">
+        <h1>Pinterest Authorization Callback</h1>
+        <p class="sub">
+            This page receives the redirect from Pinterest after a merchant authorizes the Kinoshara integration.
+            It confirms that the Pinterest account connection step has completed and that the authorization code was returned to the registered callback URL.
+        </p>
+
+        <section id="loading" class="status">
+            Processing redirect from Pinterest...
+        </section>
+
+        <section id="success" class="status hidden">
+            <p class="ok"><strong>Authorization received successfully.</strong></p>
+            <p>The Pinterest account has been authorized for the Kinoshara publishing workflow.</p>
+            <div id="code" class="code"></div>
+        </section>
+
+        <section id="error" class="status hidden">
+            <p class="err"><strong>Authorization failed.</strong></p>
             <p id="error-message"></p>
+        </section>
+
+        <div class="actions">
+            <a class="btn btn-primary" href="/privacy.html">Privacy Policy</a>
+            <a class="btn btn-secondary" href="/">Back to Home</a>
         </div>
-        
-        <a href="/" class="btn">Back to Home</a>
-    </div>
-    
+
+        <p class="meta">
+            This callback page is used only for Pinterest account authorization and secure backend processing related to Kinoshara's merchant publishing workflow.
+        </p>
+    </main>
+
     <script>
-        // Parse URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const error = urlParams.get('error');
-        const state = urlParams.get('state');
-        
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const error = params.get('error');
+        const errorDescription = params.get('error_description');
+
         const loadingEl = document.getElementById('loading');
         const successEl = document.getElementById('success');
         const errorEl = document.getElementById('error');
         const codeEl = document.getElementById('code');
         const errorMsgEl = document.getElementById('error-message');
-        
-        if (error) {
-            loadingEl.classList.add('hidden');
-            errorEl.classList.remove('hidden');
-            errorMsgEl.textContent = `Error: ${error}`;
-        } else if (code) {
-            loadingEl.classList.add('hidden');
+
+        loadingEl.classList.add('hidden');
+
+        if (code) {
             successEl.classList.remove('hidden');
-            codeEl.textContent = code;
-            
-            // In production, this code would be sent to your backend
-            // to exchange for an access token
-            console.log('Authorization code:', code);
-            console.log('State:', state);
+            codeEl.textContent = `Authorization code: ${code}`;
         } else {
-            loadingEl.classList.add('hidden');
             errorEl.classList.remove('hidden');
-            errorMsgEl.textContent = 'No authorization code received.';
+            errorMsgEl.textContent = errorDescription || error || 'No authorization code was returned in the callback URL.';
         }
     </script>
 </body>
